@@ -1,0 +1,39 @@
+
+html {
+    scroll-behavior: smooth;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+    html,
+    body {
+        font-family: "Poppins", "Noto Sans Thai", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        scroll-behavior: smooth;
+    }
+
+}
+/* ===== Scrollbar CSS ===== */
+::-webkit-scrollbar {
+  width: 8px; /* ความกว้าง scrollbar */
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* สีพื้นหลัง */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #afafaf, #afafaf); /* สีเขียว gradient */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #848484, #a1a1a1); /* hover เข้มขึ้น */
+}
