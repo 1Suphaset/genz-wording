@@ -25,7 +25,7 @@ export default function DictionarySearch() {
             if (searchTerm) params.append("q", searchTerm);
             if (selectedCategories.length > 0) params.append("categories", selectedCategories.join(","));
 
-            const res = await fetch(`http://localhost:8888/.netlify/functions/search-words?${params.toString()}`);
+            const res = await fetch(`/.netlify/functions/search-words?${params.toString()}`);
             const data = await res.json();
             setResults(data);
         } catch (err) {
