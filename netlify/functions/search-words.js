@@ -24,19 +24,24 @@ exports.handler = async function (event, context) {
         // 🔍 Search keyword
         if (q) {
             let pattern;
+            const searchMode = (mode || "").trim().toLowerCase();
 
-            if (mode === "start") {
-                pattern = `${q}%`;      // ขึ้นต้น
-                conditions.push(`w.word ILIKE $${paramIndex}`);
+            if (searchMode === "start") {
+                pattern = `${q}%`;
+                conditions.push(`unaccent(lower(w.word)) LIKE unaccent(lower($${paramIndex}))`);
                 values.push(pattern);
                 paramIndex++;
             } else {
-                pattern = `%${q}%`;     // ค้นแบบ anywhere
-                conditions.push(`(w.word ILIKE $${paramIndex} OR w.meaning ILIKE $${paramIndex + 1})`);
+                pattern = `%${q}%`;
+                conditions.push(`
+            unaccent(lower(w.word)) LIKE unaccent(lower($${paramIndex}))
+            OR unaccent(lower(w.meaning)) LIKE unaccent(lower($${paramIndex + 1}))
+        `);
                 values.push(pattern, pattern);
                 paramIndex += 2;
             }
         }
+
 
 
         // 🔎 Filter categories

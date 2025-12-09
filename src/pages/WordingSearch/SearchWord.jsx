@@ -189,7 +189,7 @@ export default function DictionarySearch() {
                             <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <h3 className="text-xl font-medium text-gray-900 mb-2">
-                                        {result.worหd}
+                                        {result.word}
                                     </h3>
                                     <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
                                         {result.category}

@@ -17,21 +17,21 @@ export default function AlphabetDictionary() {
         'ม', 'ย', 'ร', 'ล', 'ว', 'ศ', 'ษ', 'ส', 'ห', 'ฬ', 'อ', 'ฮ'
     ];
 
-   
+
     const fetchWordsByLetter = async (letter) => {
-    const res = await fetch(
-        `${API_URL}/search-words?q=${letter}&mode=start`
-    );
-    const data = await res.json();
-    setWords(data);
-};
-const fetchWordDetail = async (id) => {
-    const res = await fetch(
-        `${API_URL}/search-words?q=${id}&mode=id`
-    );
-    const data = await res.json();
-    setSelectedWord(data[0]);
-};
+        const res = await fetch(
+            `${API_URL}/search-words?q=${letter}&mode=start`
+        );
+        const data = await res.json();
+        setWordList(data);
+    };
+    const fetchWordDetail = async (word) => {
+        const res = await fetch(
+            `${API_URL}/search-words?q=${word}`
+        );
+        const data = await res.json();
+        setSelectedWord(data[0]);
+    };
 
 
     // Pagination
@@ -94,7 +94,7 @@ const fetchWordDetail = async (id) => {
                                         paginatedWords.map((word) => (
                                             <button
                                                 key={word.id}
-                                                onClick={() => fetchWordDetail(word.id)}
+                                                onClick={() => fetchWordDetail(word.word)}
                                                 className={`w-full px-4 py-3 text-left transition
                                                     ${selectedWord?.id === word.id ? 'bg-gray-100' : 'hover:bg-gray-50'}
                                                 `}
@@ -136,30 +136,38 @@ const fetchWordDetail = async (id) => {
                     {/* Word Detail */}
                     <div className="col-span-2">
                         {selectedWord ? (
-                            <div className="bg-white rounded-lg border">
-                                <div className="bg-gradient-to-r from-purple-300 to-pink-300 px-6 py-4">
-                                    <h2 className="text-2xl font-semibold text-gray-900">
-                                        {selectedWord.word}
-                                    </h2>
-                                    <span className="text-xs bg-white mt-2 px-3 py-1 rounded-full inline-block">
-                                        {selectedWord.category}
-                                    </span>
+                            <div
+                                key={selectedWord.id}
+                                className="bg-white rounded-lg border border-gray-200 p-6 hover:border-gray-300 transition"
+                            >
+                                <div className="flex items-start justify-between mb-4">
+                                    <div>
+                                        <h3 className="text-xl font-medium text-gray-900 mb-2">
+                                            {selectedWord.word}
+                                        </h3>
+                                        <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                            {selectedWord.category}
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <div className="p-6 space-y-4">
-                                    <div>
-                                        <h3 className="text-sm text-gray-500">ความหมาย</h3>
-                                        <div className="bg-gray-50 p-3 rounded">
-                                            {selectedWord.definition}
-                                        </div>
+                                <div className="space-y-3">
+                                    <div className="border-l-2 border-gray-200 pl-4">
+                                        <p className="text-gray-700">{selectedWord.meaning}</p>
                                     </div>
 
-                                    <div>
-                                        <h3 className="text-sm text-gray-500">ตัวอย่างประโยค</h3>
-                                        <div className="bg-gray-50 p-3 rounded">
+                                    <div className="bg-gray-50 rounded px-4 py-3">
+                                        <p className="text-sm text-gray-600">
+                                            <span className="font-medium">ตัวอย่าง:</span>{' '}
                                             {selectedWord.example}
-                                        </div>
+                                        </p>
                                     </div>
+                                </div>
+
+                                <div className="mt-4 flex justify-end">
+                                    <button className="text-sm text-gray-600 transition">
+                                        แหล่งที่มา {selectedWord.source}
+                                    </button>
                                 </div>
                             </div>
                         ) : (
