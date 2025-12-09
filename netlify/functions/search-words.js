@@ -1,4 +1,3 @@
-// netlify/functions/search-words.js
 const { Client } = require("pg");
 
 exports.handler = async function (event, context) {
@@ -10,31 +9,42 @@ exports.handler = async function (event, context) {
     try {
         await client.connect();
 
-        // อ่าน query params: ?q=คำค้น&categories=คำนาม,กริยา
-        const { q, categories } = event.queryStringParameters || {};
+        const { q, categories, mode } = event.queryStringParameters || {};
 
-        // เตรียม SQL
         let baseQuery = `
-      SELECT w.id, w.word, w.meaning, w.example, w.source, t.name AS category
-      FROM Words w
-      LEFT JOIN WordType t ON w.type_id = t.id
-    `;
+            SELECT w.id, w.word, w.meaning, w.example, w.source, t.name AS category
+            FROM Words w
+            LEFT JOIN WordType t ON w.type_id = t.id
+        `;
+
         let conditions = [];
         let values = [];
+        let paramIndex = 1;
 
-        // Search term
+        // 🔍 Search keyword
         if (q) {
-            values.push(`%${q}%`);
-            values.push(`%${q}%`);
-            conditions.push(`(w.word ILIKE $${values.length - 1} OR w.meaning ILIKE $${values.length})`);
+            let pattern;
+
+            if (mode === "start") {
+                pattern = `${q}%`;      // ขึ้นต้น
+                conditions.push(`w.word ILIKE $${paramIndex}`);
+                values.push(pattern);
+                paramIndex++;
+            } else {
+                pattern = `%${q}%`;     // ค้นแบบ anywhere
+                conditions.push(`(w.word ILIKE $${paramIndex} OR w.meaning ILIKE $${paramIndex + 1})`);
+                values.push(pattern, pattern);
+                paramIndex += 2;
+            }
         }
 
-        // Filter categories
+
+        // 🔎 Filter categories
         if (categories) {
             const cats = categories.split(",");
-            const catPlaceholders = cats.map((_, i) => `$${values.length + i + 1}`).join(",");
+            const placeholders = cats.map(() => `$${paramIndex++}`).join(", ");
             values.push(...cats);
-            conditions.push(`t.name IN (${catPlaceholders})`);
+            conditions.push(`t.name IN (${placeholders})`);
         }
 
         if (conditions.length > 0) {
@@ -54,7 +64,6 @@ exports.handler = async function (event, context) {
             },
             body: JSON.stringify(result.rows),
         };
-
     } catch (err) {
         console.error(err);
         return {

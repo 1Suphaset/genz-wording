@@ -4,7 +4,7 @@ export const GuestLayout = ({ children }) => {
     return (
         <>
             <Header />
-            <main >{children}</main>
+            <main className="pt-[110px]">{children}</main>
             {/* <StudentFooter /> */}
         </>
     );
